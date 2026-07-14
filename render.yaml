@@ -1,5 +1,5 @@
 services:
-  - type: worker
+  - type: web
     name: kirana-agent-bot
     runtime: node
     plan: free
@@ -12,6 +12,8 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        generateValue: true
       - key: LOG_LEVEL
         value: info
       - key: NODE_VERSION

@@ -55,6 +55,20 @@ export class TelegramClient {
     if (!res.ok) throw new Error(`sendDocument HTTP ${res.status}: ${await res.text()}`);
   }
 
+  async setWebhook(url: string, secretToken: string): Promise<void> {
+    const res = await fetch(`${this.base}/setWebhook`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url, secret_token: secretToken, allowed_updates: ["message", "edited_message"] }),
+    });
+    if (!res.ok) throw new Error(`setWebhook HTTP ${res.status}: ${await res.text()}`);
+  }
+
+  async deleteWebhook(): Promise<void> {
+    const res = await fetch(`${this.base}/deleteWebhook`, { method: "POST" });
+    if (!res.ok) throw new Error(`deleteWebhook HTTP ${res.status}: ${await res.text()}`);
+  }
+
   async getFileBytes(fileId: string): Promise<Buffer | null> {
     const res = await fetch(`${this.base}/getFile?file_id=${encodeURIComponent(fileId)}`);
     if (!res.ok) return null;

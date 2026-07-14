@@ -18,5 +18,9 @@ export const config = {
   get databaseUrl() {
     return required("DATABASE_URL");
   },
+  get webhookSecret() {
+    return required("TELEGRAM_WEBHOOK_SECRET");
+  },
+  port: Number(process.env.PORT ?? 3000),
   logLevel: process.env.LOG_LEVEL ?? "info",
 };
