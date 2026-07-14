@@ -1,0 +1,31 @@
+{
+  "name": "kirana-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "migrate": "tsx scripts/runMigrations.ts",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "4.0.12",
+    "ai": "7.0.22",
+    "decimal.js": "^10.6.0",
+    "dotenv": "^16.4.7",
+    "pdfkit": "^0.15.1",
+    "pg": "^8.13.1",
+    "pptxgenjs": "^3.12.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pdfkit": "^0.13.5",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
