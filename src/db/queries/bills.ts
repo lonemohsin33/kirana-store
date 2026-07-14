@@ -6,7 +6,7 @@ import type { PoolClient } from "pg";
 import Decimal from "decimal.js";
 import { withTransaction } from "../pool.ts";
 import { getProduct, insertStockLedger, lockProductsOrdered } from "./products.ts";
-import { computeBillTotals, computeLineTax, type LineTax } from "../../gst.ts";
+import { computeBillTotals, computeLineTax, serializeBillTotals, type LineTax } from "../../gst.ts";
 
 export async function getOrCreateDraft(client: PoolClient, telegramChatId: number, createdBy: number) {
   const existing = await client.query(
@@ -133,7 +133,7 @@ export async function viewDraftBill(client: PoolClient, billId: number) {
   const bill = await getBill(client, billId);
   if (!bill) return null;
   const lines = await getLineItems(client, billId);
-  const totals = lines.length > 0 ? computeBillTotals(lines.map(toLineTax)) : null;
+  const totals = lines.length > 0 ? serializeBillTotals(computeBillTotals(lines.map(toLineTax))) : null;
   return { bill, lines, totals };
 }
 
@@ -246,7 +246,7 @@ export async function finalizeBill(params: {
       }
     }
 
-    return { ok: true, idempotentReplay: false, bill: updatedRows[0], lines, totals, khataTransaction: khataTxn };
+    return { ok: true, idempotentReplay: false, bill: updatedRows[0], lines, totals: serializeBillTotals(totals), khataTransaction: khataTxn };
   });
 }
 

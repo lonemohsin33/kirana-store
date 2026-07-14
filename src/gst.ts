@@ -63,6 +63,29 @@ export interface BillTotals {
   roundOff: Decimal;
 }
 
+export interface BillTotalsPlain {
+  subtotal: string;
+  totalCgst: string;
+  totalSgst: string;
+  grandTotal: string;
+  roundOff: string;
+}
+
+// Decimal instances are class instances, not plain JSON values — anything returned from a tool's
+// execute() ends up in the model's message history, and the AI SDK's tool-output schema rejects
+// non-plain-object values there (the same reason raw JS Date breaks it). Convert at the boundary
+// rather than changing BillTotals itself, since callers like finalizeBill still need real Decimal
+// arithmetic (e.g. .toString() into SQL params) before the result is handed back as a tool result.
+export function serializeBillTotals(totals: BillTotals): BillTotalsPlain {
+  return {
+    subtotal: totals.subtotal.toString(),
+    totalCgst: totals.totalCgst.toString(),
+    totalSgst: totals.totalSgst.toString(),
+    grandTotal: totals.grandTotal.toString(),
+    roundOff: totals.roundOff.toString(),
+  };
+}
+
 export function computeBillTotals(lines: LineTax[], roundOffToRupee = false): BillTotals {
   const subtotal = lines.reduce((acc, l) => acc.plus(l.taxableValue), new Decimal(0));
   const totalCgst = lines.reduce((acc, l) => acc.plus(l.cgstAmount), new Decimal(0));
