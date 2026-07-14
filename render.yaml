@@ -1,8 +1,3 @@
-databases:
-  - name: kirana-agent-db
-    plan: free
-    postgresMajorVersion: "16"
-
 services:
   - type: worker
     name: kirana-agent-bot
@@ -16,9 +11,7 @@ services:
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: DATABASE_URL
-        fromDatabase:
-          name: kirana-agent-db
-          property: connectionString
+        sync: false
       - key: LOG_LEVEL
         value: info
       - key: NODE_VERSION
