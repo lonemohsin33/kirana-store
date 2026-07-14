@@ -12,7 +12,10 @@ import type { TelegramClient } from "../telegram/client.ts";
 import { withClient } from "../db/pool.ts";
 import { getPreferences } from "../db/queries/preferences.ts";
 
-const MODEL_ID = "gemini-flash-latest";
+// The full "flash" tier's free daily quota is extremely small (20 requests/day on the current
+// model behind gemini-flash-latest) and a single multi-step tool-calling turn burns several
+// requests at once, so use the lite tier instead for a stable review deployment.
+const MODEL_ID = "gemini-flash-lite-latest";
 const MAX_STEPS = 20;
 
 export interface DocumentToSend {
