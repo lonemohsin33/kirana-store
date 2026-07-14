@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { config } from "./config.ts";
 import { closePool, initPool } from "./db/pool.ts";
 import { runMigrations } from "../scripts/runMigrations.ts";
@@ -19,9 +20,14 @@ async function main(): Promise<void> {
   if (externalUrl) {
     // The webhook server keeps the process (and the pool) alive for its lifetime; there is no
     // "done" point to close the pool at, unlike the long-poll loop below.
-    const path = `/telegram/${config.webhookSecret}`;
-    await telegram.setWebhook(`${externalUrl}${path}`, config.webhookSecret);
-    startWebhookServer(config.port, path, config.webhookSecret, (update) => dispatcher.handleUpdate(update));
+    //
+    // Telegram's secret_token only allows [A-Za-z0-9_-]; Render's generated env var values can
+    // contain other characters, so hash it down to a guaranteed-safe hex string instead of
+    // relying on the raw value's charset.
+    const safeToken = createHash("sha256").update(config.webhookSecret).digest("hex");
+    const path = `/telegram/${safeToken}`;
+    await telegram.setWebhook(`${externalUrl}${path}`, safeToken);
+    startWebhookServer(config.port, path, safeToken, (update) => dispatcher.handleUpdate(update));
     return;
   }
 
